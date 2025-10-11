@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cat-agency-ingress
+  namespace: cat-agency
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  tls:
+  - hosts:
+    - cat-agency.local
+    - api.cat-agency.local
+    secretName: cat-agency-tls
+  rules:
+  - host: cat-agency.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cat-agency-frontend
+            port:
+              number: 80
+  - host: api.cat-agency.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cat-agency-backend
+            port:
+              number: 5000

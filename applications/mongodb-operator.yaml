@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: community-operator
+    repoURL: https://mongodb.github.io/helm-charts
+    targetRevision: 0.9.0
+    helm:
+      releaseName: mongodb-operator
+      values: |
+        operator:
+          watchNamespace: "*"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mongodb-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

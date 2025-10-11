@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cat-agency-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: cat-agency
+    repoURL: https://github.com/dori654/cat-agency-helm-charts.git
+    targetRevision: main
+    helm:
+      releaseName: cat-agency
+      values: |
+        frontend:
+          image:
+            repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
+            tag: frontend-v1.0.2
+          service:
+            type: ClusterIP
+            port: 80
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: nginx
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            hosts:
+            - host: cat-agency.local
+              paths:
+              - path: /
+                pathType: Prefix
+            tls:
+            - secretName: cat-agency-tls
+              hosts:
+              - cat-agency.local
+        backend:
+          image:
+            repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
+            tag: backend-v1.0.3
+          service:
+            type: ClusterIP
+            port: 5000
+          env:
+            MONGODB_URI: mongodb://mongodb:27017/cat-agency
+        mongodb:
+          enabled: false # Using external MongoDB cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cat-agency
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

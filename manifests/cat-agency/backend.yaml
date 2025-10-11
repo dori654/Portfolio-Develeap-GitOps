@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-agency-backend
+  namespace: cat-agency
+  labels:
+    app: cat-agency-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cat-agency-backend
+  template:
+    metadata:
+      labels:
+        app: cat-agency-backend
+    spec:
+      containers:
+      - name: backend
+        image: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app:backend-v1.0.3
+        ports:
+        - containerPort: 5000
+        env:
+        - name: MONGODB_URI
+          value: "mongodb://mongodb:27017/cat-agency"
+        - name: PORT
+          value: "5000"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cat-agency-backend
+  namespace: cat-agency
+spec:
+  selector:
+    app: cat-agency-backend
+  ports:
+  - port: 5000
+    targetPort: 5000
+  type: ClusterIP

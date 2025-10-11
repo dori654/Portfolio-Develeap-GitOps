@@ -1,0 +1,40 @@
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb-replica-set
+  namespace: cat-agency
+spec:
+  members: 3
+  type: ReplicaSet
+  version: "6.0.5"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+    - name: cat-agency-user
+      db: admin
+      passwordSecretRef:
+        name: cat-agency-user-password
+      roles:
+        - name: clusterAdmin
+          db: admin
+        - name: userAdminAnyDatabase
+          db: admin
+        - name: readWriteAnyDatabase
+          db: admin
+      scramCredentialsSecretName: cat-agency-scram
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: cat-agency
+spec:
+  selector:
+    app: mongodb-replica-set-svc
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
