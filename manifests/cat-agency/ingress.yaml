@@ -11,11 +11,11 @@ metadata:
 spec:
   tls:
   - hosts:
-    - cat-agency.local
-    - api.cat-agency.local
+    - cat-agency.ddns.net
+    - api.cat-agency.ddns.net
     secretName: cat-agency-tls
   rules:
-  - host: cat-agency.local
+  - host: cat-agency.ddns.net
     http:
       paths:
       - path: /
@@ -25,13 +25,20 @@ spec:
             name: cat-agency-frontend
             port:
               number: 80
-  - host: api.cat-agency.local
+  - host: api.cat-agency.ddns.net
     http:
       paths:
-      - path: /
+      - path: /api
         pathType: Prefix
         backend:
           service:
             name: cat-agency-backend
             port:
               number: 5000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cat-agency-frontend
+            port:
+              number: 80
