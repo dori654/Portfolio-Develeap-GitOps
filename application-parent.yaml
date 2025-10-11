@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/dori654/Portfolio-Develeap.git
+    repoURL: https://github.com/dori654/Portfolio-Develeap-GitOps.git
     targetRevision: HEAD
     path: applications
   destination:
