@@ -1,5 +1,26 @@
 apiVersion: apps/v1
-ki        env:
+kind: Deployment
+metadata:
+  name: cat-agency-backend
+  namespace: cat-agency
+  labels:
+    app: cat-agency-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cat-agency-backend
+  template:
+    metadata:
+      labels:
+        app: cat-agency-backend
+    spec:
+      containers:
+      - name: backend
+        image: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app:backend-v1.0.3
+        ports:
+        - containerPort: 5000
+        env:
         - name: MONGODB_URI
           valueFrom:
             secretKeyRef:
@@ -35,31 +56,6 @@ ki        env:
             secretKeyRef:
               name: cat-agency-env
               key: KUBE_NAMESPACE
-        - name: PORT
-          value: "5000"eployment
-metadata:
-  name: cat-agency-backend
-  namespace: cat-agency
-  labels:
-    app: cat-agency-backend
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: cat-agency-backend
-  template:
-    metadata:
-      labels:
-        app: cat-agency-backend
-    spec:
-      containers:
-      - name: backend
-        image: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app:backend-v1.0.3
-        ports:
-        - containerPort: 5000
-        env:
-        - name: MONGODB_URI
-          value: "mongodb://mongodb:27017/cat-agency"
         - name: PORT
           value: "5000"
         resources:
