@@ -3,6 +3,8 @@ kind: MongoDBCommunity
 metadata:
   name: mongodb-replica-set
   namespace: cat-agency
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   members: 1
   type: ReplicaSet
@@ -31,6 +33,8 @@ kind: Service
 metadata:
   name: mongodb
   namespace: cat-agency
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   selector:
     app: mongodb-replica-set-svc

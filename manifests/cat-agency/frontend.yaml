@@ -5,6 +5,8 @@ metadata:
   namespace: cat-agency
   labels:
     app: cat-agency-frontend
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   replicas: 2
   selector:
@@ -39,6 +41,8 @@ kind: Service
 metadata:
   name: cat-agency-frontend
   namespace: cat-agency
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   selector:
     app: cat-agency-frontend
