@@ -31,7 +31,7 @@ spec:
         # Volume claim template
         volumeClaimTemplate:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "gp2"
+          storageClassName: "ebs-gp3"
           resources:
             requests:
               storage: 10Gi
