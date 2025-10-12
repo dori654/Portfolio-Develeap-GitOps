@@ -1,5 +1,42 @@
 apiVersion: apps/v1
-kind: Deployment
+ki        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: MONGODB_URI
+        - name: MONGODB_URL
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: MONGODB_URL
+        - name: THECAT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: THECAT_API_KEY
+        - name: FLASK_ENV
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: FLASK_ENV
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: AWS_REGION
+        - name: AWS_ACCOUNT_ID
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: AWS_ACCOUNT_ID
+        - name: KUBE_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: cat-agency-env
+              key: KUBE_NAMESPACE
+        - name: PORT
+          value: "5000"eployment
 metadata:
   name: cat-agency-backend
   namespace: cat-agency
