@@ -5,15 +5,9 @@ metadata:
   namespace: cat-agency
   annotations:
     kubernetes.io/ingress.class: nginx
-    cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
-  tls:
-  - hosts:
-    - cat-agency.ddns.net
-    - api.cat-agency.ddns.net
-    secretName: cat-agency-tls
   rules:
   - host: cat-agency.ddns.net
     http:
