@@ -1,0 +1,176 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: fluent-bit
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: fluent-bit
+    repoURL: https://fluent.github.io/helm-charts
+    targetRevision: 0.21.7
+    helm:
+      releaseName: fluent-bit
+      values: |
+        logLevel: info
+        
+        # DaemonSet configuration to run on all nodes
+        kind: DaemonSet
+        
+        # Resource limits
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        
+        # Service account
+        serviceAccount:
+          create: true
+          name: fluent-bit
+        
+        # Security context
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 2020
+          runAsGroup: 2020
+          readOnlyRootFilesystem: true
+        
+        # Pod security context
+        podSecurityContext:
+          fsGroup: 2020
+        
+        # Tolerations to run on all nodes
+        tolerations:
+          - key: node-role.kubernetes.io/master
+            operator: Exists
+            effect: NoSchedule
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+        
+        # Node selector
+        nodeSelector: {}
+        
+        # Environment variables for Elasticsearch authentication
+        env:
+          - name: FLUENT_ES_USER
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-credentials
+                key: username
+          - name: FLUENT_ES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-credentials
+                key: password
+        
+        # Fluent Bit configuration
+        config:
+          service: |
+            [SERVICE]
+                Daemon Off
+                Flush 1
+                Log_Level debug
+                Parsers_File /fluent-bit/etc/parsers.conf
+                Parsers_File /fluent-bit/etc/conf/custom_parsers.conf
+                HTTP_Server On
+                HTTP_Listen 0.0.0.0
+                HTTP_Port 2020
+                Health_Check On
+                Trace_Error On
+
+          inputs: |
+            [INPUT]
+                Name tail
+                Path /var/log/containers/*cat-agency*.log
+                multiline.parser docker, cri
+                Tag catagency.*
+                Mem_Buf_Limit 50MB
+                Skip_Long_Lines On
+                Refresh_Interval 5
+
+          filters: |
+            [FILTER]
+                Name kubernetes
+                Match catagency.*
+                Merge_Log On
+                Keep_Log Off
+                Buffer_Size False
+                K8S-Logging.Parser On
+
+            [FILTER]
+                Name parser
+                Match catagency.*
+                Key_Name log
+                Parser cat_agency_json
+                Reserve_Data On
+                Preserve_Key On
+
+          customParsers: |
+            [PARSER]
+                Name cat_agency_json
+                Format json
+                Time_Key timestamp
+                Time_Format %Y-%m-%dT%H:%M:%S.%f
+
+            [PARSER]
+                Name cat_agency_events
+                Format json
+                Time_Key timestamp
+                Time_Format %Y-%m-%dT%H:%M:%S.%f
+
+          outputs: |
+            [OUTPUT]
+                Name es
+                Match catagency.*
+                Index cat-agency-logs
+                Type  _doc
+                Host elasticsearch-master
+                Port 9200
+                HTTP_User ${FLUENT_ES_USER}
+                HTTP_Passwd ${FLUENT_ES_PASS}
+                tls Off
+                tls.verify Off
+                Logstash_Format On
+                Logstash_Prefix cat-agency
+                Retry_Limit False
+                Suppress_Type_Name On
+        
+        # Mount additional volumes
+        volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: varlibdockercontainers
+            mountPath: /var/lib/docker/containers
+            readOnly: true
+          - name: etcmachineid
+            mountPath: /etc/machine-id
+            readOnly: true
+        
+        volumes:
+          - name: varlog
+            hostPath:
+              path: /var/log
+          - name: varlibdockercontainers
+            hostPath:
+              path: /var/lib/docker/containers
+          - name: etcmachineid
+            hostPath:
+              path: /etc/machine-id
+              type: File
+        
+        # Service monitor for Prometheus scraping
+        serviceMonitor:
+          enabled: true
+          
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: logging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
