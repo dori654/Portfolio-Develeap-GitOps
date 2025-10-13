@@ -15,7 +15,7 @@ spec:
         grafana:
           adminPassword: admin123
           service:
-            type: LoadBalancer
+            type: ClusterIP
           ingress:
             enabled: true
             annotations:
@@ -33,7 +33,7 @@ spec:
             scrapeInterval: 30s
             retention: 15d
           service:
-            type: LoadBalancer
+            type: ClusterIP
           ingress:
             enabled: true
             annotations:
