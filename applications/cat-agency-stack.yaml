@@ -42,7 +42,7 @@ spec:
             port: 5000
           env:
             - name: MONGODB_URI
-              value: "mongodb://cat-agency-mongodb:27017/cat_agency"
+              value: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
             - name: FLASK_ENV
               value: "production"
             - name: THECAT_API_KEY
