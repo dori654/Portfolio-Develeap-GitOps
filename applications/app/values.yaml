@@ -107,6 +107,13 @@ frontend:
           name: cat-agency-env
           key: REACT_APP_API_URL
 
+  # Fix nginx permissions - frontend needs to run as root
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    runAsNonRoot: false
+    readOnlyRootFilesystem: false
+
   livenessProbe:
     httpGet:
       path: /
@@ -121,7 +128,6 @@ frontend:
     initialDelaySeconds: 5
     periodSeconds: 5
 
-# MongoDB configuration - Using external MongoDB operator, not included in this chart
 mongodb:
   enabled: false
 

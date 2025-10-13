@@ -12,115 +12,12 @@ spec:
     helm:
       releaseName: cat-agency
       values: |
-        # Frontend configuration
-        frontend:
-          replicaCount: 2
-          image:
-            repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
-            tag: frontend-v1.0.2
-            pullPolicy: IfNotPresent
-          service:
-            type: ClusterIP
-            port: 80
-          resources:
-            limits:
-              cpu: 200m
-              memory: 256Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-
-        # Security context (needed for nginx frontend)
-        podSecurityContext:
-          runAsUser: 0
-          runAsGroup: 0
-
-        # Backend configuration
-        backend:
-          replicaCount: 2
-          image:
-            repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
-            tag: backend-v1.0.3
-            pullPolicy: IfNotPresent
-          service:
-            type: ClusterIP
-            port: 5000
-          env:
-            - name: MONGODB_URI
-              value: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
-            - name: FLASK_ENV
-              value: "production"
-            - name: THECAT_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: cat-agency-env
-                  key: THECAT_API_KEY
-          resources:
-            limits:
-              cpu: 500m
-              memory: 512Mi
-            requests:
-              cpu: 250m
-              memory: 256Mi
-
-        # MongoDB configuration (using embedded MongoDB)
+        # Production environment overrides only
+        # All defaults are now in applications/app/values.yaml
+        
+        # MongoDB configuration (external to Helm chart, managed by MongoDB Operator)
         mongodb:
-          enabled: true
-          replicaCount: 1
-          service:
-            port: 27017
-          persistence:
-            enabled: true
-            size: 10Gi
-            storageClass: "gp2"
-
-        # Ingress configuration (matches existing ingress.yaml)
-        ingress:
-          enabled: true
-          className: "nginx"
-          annotations:
-            kubernetes.io/ingress.class: nginx
-            nginx.ingress.kubernetes.io/rewrite-target: /
-            nginx.ingress.kubernetes.io/use-regex: "true"
-          hosts:
-            - host: cat-agency.ddns.net
-              paths:
-                - path: /
-                  pathType: Prefix
-                  backend: frontend
-            - host: api.cat-agency.ddns.net
-              paths:
-                - path: /api
-                  pathType: Prefix
-                  backend: backend
-                - path: /
-                  pathType: Prefix
-                  backend: frontend
-          tls: []
-
-        # Secrets (matches existing env-secret.yaml)
-        secrets:
-          AWS_ACCOUNT_ID: "601094796564"
-          AWS_REGION: "ap-south-1"
-          FLASK_ENV: "production"
-          KUBE_NAMESPACE: "cat-agency"
-          MONGODB_URI: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
-          MONGODB_URL: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
-          REACT_APP_API_URL: "/api"
-          THECAT_API_KEY: "live_Nk8ZEYQWDR9tL2IXTihr3CjxV2HCfZSm81Wh7zjwgldJ96nHY3Bt431UojXwCQNH"
-
-        # Autoscaling
-        autoscaling:
-          backend:
-            enabled: true
-            minReplicas: 2
-            maxReplicas: 10
-            targetCPUUtilizationPercentage: 70
-          frontend:
-            enabled: true
-            minReplicas: 2
-            maxReplicas: 8
-            targetCPUUtilizationPercentage: 70
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: cat-agency
