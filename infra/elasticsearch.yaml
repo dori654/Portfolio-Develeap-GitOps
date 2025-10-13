@@ -1,66 +1,103 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: elasticsearch
+  name: fluent-bit
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
 spec:
   project: default
   source:
-    chart: elasticsearch
-    repoURL: https://helm.elastic.co
-    targetRevision: 8.5.1
+    repoURL: https://fluent.github.io/helm-charts
+    chart: fluent-bit
+    targetRevision: 0.45.0
     helm:
-      releaseName: elasticsearch
       values: |
-        clusterName: "cat-agency-logs"
-        nodeGroup: "master"
-        
-        # Use smaller resources for development
-        replicas: 1
-        minimumMasterNodes: 1
-        
-        # Resource limits
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "512Mi"
-          limits:
-            cpu: "1000m"
-            memory: "1Gi"
-        
-        # Volume claim template
-        volumeClaimTemplate:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "ebs-gp3"
-          resources:
-            requests:
-              storage: 10Gi
-        
-        # Simplified security configuration - disable security for now
-        esConfig:
-          elasticsearch.yml: |
-            xpack.security.enabled: false
-        
-        # Use ClusterIP service (single load balancer approach)
-        service:
-          type: ClusterIP
-        
-        # Security context
-        securityContext:
-          fsGroup: 1000
-          runAsUser: 1000
-        
-        # Health checks
-        readinessProbe:
-          httpGet:
-            path: /_cluster/health?local=true
-            port: 9200
-            scheme: HTTPS
-          initialDelaySeconds: 60
-        
-        # Anti-affinity for production (optional for dev)
-        antiAffinity: "soft"
-        
+        logLevel: info
+        env:
+          - name: FLUENT_ES_USER
+            valueFrom:
+              secretKeyRef:
+                name: logging-secret
+                key: username
+          - name: FLUENT_ES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: logging-secret
+                key: password
+
+        config:
+          service: |
+            [SERVICE]
+                Daemon Off
+                Flush 1
+                Log_Level debug
+                Parsers_File /fluent-bit/etc/parsers.conf
+                Parsers_File /fluent-bit/etc/conf/custom_parsers.conf
+                HTTP_Server On
+                HTTP_Listen 0.0.0.0
+                HTTP_Port 2020
+                Health_Check On
+                Trace_Error On
+
+          inputs: |
+            [INPUT]
+                Name tail
+                Path /var/log/containers/*cat_app*.log
+                multiline.parser docker, cri
+                Tag cat_app.*
+                Mem_Buf_Limit 50MB
+                Skip_Long_Lines On
+                Refresh_Interval 5
+
+          filters: |
+            [FILTER]
+                Name kubernetes
+                Match cat_app.*
+                Merge_Log On
+                Keep_Log Off
+                Buffer_Size False
+                K8S-Logging.Parser On
+
+            [FILTER]
+                Name parser
+                Match cat_app.*
+                Key_Name log
+                Parser cat_app_json
+                Reserve_Data On
+                Preserve_Key On
+
+          customParsers: |
+            [PARSER]
+                Name cat_app_json
+                Format json
+                Time_Key timestamp
+                Time_Format %Y-%m-%dT%H:%M:%S.%f
+
+            [PARSER]
+                Name cat_app_events
+                Format json
+                Time_Key timestamp
+                Time_Format %Y-%m-%dT%H:%M:%S.%f
+
+          outputs: |
+            [OUTPUT]
+                Name es
+                Match cat_app.*
+                Index cat-app-logs
+                Type  _doc
+                Host elasticsearch-master
+                Port 9200
+                HTTP_User ${FLUENT_ES_USER}
+                HTTP_Passwd ${FLUENT_ES_PASS}
+                tls Off
+                tls.verify Off
+                Logstash_Format On
+                Logstash_Prefix cat-app
+                Retry_Limit False
+                Suppress_Type_Name On
+
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
@@ -69,4 +106,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - ServerSideApply=true

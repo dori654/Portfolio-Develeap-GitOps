@@ -1,0 +1,46 @@
+apiVersion: v2
+name: cat-agency
+description: A Helm chart for Cat Agency - A microservices application for cat adoption
+
+# Application chart for deploying the complete Cat Agency stack including:
+# - Backend API (Flask/Python) 
+# - Frontend (React/Nginx)
+# - MongoDB database
+# - Ingress configuration
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 1.0.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: "1.0.0"
+
+# Chart maintainer information
+maintainers:
+  - name: dori654
+    email: dori.fourer654@gmail.com
+
+# Keywords for searching and categorizing the chart
+keywords:
+  - cat-agency
+  - adoption
+  - microservices
+  - react
+  - flask
+  - mongodb
+
+# Home page for the project
+home: https://github.com/dori654/Portfolio-Develeap
+
+# Source code URLs
+sources:
+  - https://github.com/dori654/Portfolio-Develeap
+  - https://github.com/dori654/Portfolio-Develeap-GitOps
+
+# Application icon (optional)
+icon: https://via.placeholder.com/200x200?text=🐱
