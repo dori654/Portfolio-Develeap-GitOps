@@ -30,6 +30,11 @@ spec:
               cpu: 100m
               memory: 128Mi
 
+        # Security context (needed for nginx frontend)
+        podSecurityContext:
+          runAsUser: 0
+          runAsGroup: 0
+
         # Backend configuration
         backend:
           replicaCount: 2
