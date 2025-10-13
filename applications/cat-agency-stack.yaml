@@ -48,8 +48,8 @@ spec:
             - name: THECAT_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: cat-agency-secrets
-                  key: cat-api-key
+                  name: cat-agency-env
+                  key: THECAT_API_KEY
           resources:
             limits:
               cpu: 500m
