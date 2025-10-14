@@ -11,13 +11,8 @@ spec:
     targetRevision: HEAD
     helm:
       releaseName: cat-agency
-      values: |
-        # Production environment overrides only
-        # All defaults are now in applications/app/values.yaml
-        
-        # MongoDB configuration (external to Helm chart, managed by MongoDB Operator)
-        mongodb:
-          enabled: false
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: cat-agency
