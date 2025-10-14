@@ -14,10 +14,11 @@ spec:
         replicas: 1
         minimumMasterNodes: 1
         
-        # Disable security for simplicity (since we're using basic auth)
+        # Enable security with API key authentication
         esConfig:
           elasticsearch.yml: |
-            xpack.security.enabled: false
+            xpack.security.enabled: true
+            xpack.security.authc.api_key.enabled: true
         
         resources:
           requests:
