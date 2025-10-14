@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: prometheus-stack
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -11,7 +13,18 @@ spec:
     targetRevision: 51.2.0
     helm:
       releaseName: prometheus-stack
+      # Don't skip CRDs - let Helm handle them properly
       values: |
+        # Ensure proper CRD management
+        prometheusOperator:
+          manageCrds: true
+          admissionWebhooks:
+            # Disable admission webhooks to avoid issues during CRD installation
+            enabled: false
+          tls:
+            # Disable TLS to simplify initial setup
+            enabled: false
+            
         grafana:
           adminPassword: admin123
           service:
@@ -27,6 +40,7 @@ spec:
             - secretName: grafana-tls
               hosts:
               - grafana.cat-agency.local
+              
         prometheus:
           prometheusSpec:
             evaluationInterval: 30s
@@ -54,3 +68,12 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=true
+    - ServerSideApply=true
+    - Replace=true
+    # Retry sync if it fails (helps with CRD timing issues)
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

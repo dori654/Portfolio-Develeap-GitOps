@@ -1,0 +1,40 @@
+---
+# Persistent Ingress Load Balancer with External-DNS
+# This creates a persistent NLB that won't change addresses
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller-persistent
+  namespace: ingress-nginx
+  annotations:
+    # AWS Load Balancer Controller annotations for persistence
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+    # Use a consistent name to prevent recreation
+    service.beta.kubernetes.io/aws-load-balancer-name: "cat-agency-ingress-nlb"
+    # External-DNS annotations for automatic DNS management
+    external-dns.alpha.kubernetes.io/hostname: "cat-agency.ddns.net,api.cat-agency.ddns.net"
+    external-dns.alpha.kubernetes.io/ttl: "300"
+  labels:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  sessionAffinity: None
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/component: controller

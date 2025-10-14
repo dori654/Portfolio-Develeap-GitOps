@@ -1,0 +1,30 @@
+---
+# MongoDB Prerequisites Application
+# This ensures MongoDB service account and scaling are handled before the main application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mongodb-prerequisites
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/instance: cat-agency-apps
+spec:
+  project: default
+  source:
+    path: manifests/mongodb
+    repoURL: https://github.com/dori654/Portfolio-Develeap-GitOps.git
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cat-agency
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true
+  # Ensure this runs before the main cat-agency-stack
+  info:
+  - name: 'Purpose'
+    value: 'MongoDB prerequisites - service account and scaling fixes'
