@@ -187,8 +187,6 @@ ingress:
     - secretName: cat-agency-tls
       hosts:
         - cat-agency.ddns.net
-    - secretName: api-cat-agency-tls
-      hosts:
         - api.cat-agency.ddns.net
 
 # Secrets configuration - These match your env-secret.yaml
