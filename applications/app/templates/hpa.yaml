@@ -7,6 +7,8 @@ metadata:
   labels:
     {{- include "app.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -43,6 +45,8 @@ metadata:
   labels:
     {{- include "app.labels" . | nindent 4 }}
     app.kubernetes.io/component: frontend
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

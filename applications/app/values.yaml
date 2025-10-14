@@ -196,14 +196,14 @@ secrets:
 # Autoscaling configuration
 autoscaling:
   backend:
-    enabled: true
+    enabled: false  # Temporarily disabled to troubleshoot
     minReplicas: 2
     maxReplicas: 10
     targetCPUUtilizationPercentage: 70
     targetMemoryUtilizationPercentage: 80
   
   frontend:
-    enabled: true
+    enabled: false  # Temporarily disabled to troubleshoot
     minReplicas: 2
     maxReplicas: 8
     targetCPUUtilizationPercentage: 70
