@@ -8,6 +8,10 @@ metadata:
     app.kubernetes.io/component: backend
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/api/metrics/prometheus"
+    prometheus.io/port: "{{ .Values.service.port }}"
+
 spec:
   type: {{ .Values.backend.service.type }}
   ports:
