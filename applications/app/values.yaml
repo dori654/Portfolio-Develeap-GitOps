@@ -172,22 +172,17 @@ ingress:
   hosts:
     - host: cat-agency.ddns.net
       paths:
-        - path: /
-          pathType: Prefix
-          backend: frontend
-    - host: api.cat-agency.ddns.net
-      paths:
         - path: /api
           pathType: Prefix
           backend: backend
         - path: /
           pathType: Prefix
           backend: frontend
+
   tls:
     - secretName: cat-agency-tls
       hosts:
         - cat-agency.ddns.net
-        - api.cat-agency.ddns.net
 
 # Secrets configuration - These match your env-secret.yaml
 secrets:
