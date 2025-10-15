@@ -23,12 +23,12 @@ spec:
           - name: ELASTICSEARCH_USERNAME
             valueFrom:
               secretKeyRef:
-                name: logging-secret
+                name: elasticsearch-credentials
                 key: username
           - name: ELASTICSEARCH_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: logging-secret
+                name: elasticsearch-credentials
                 key: password
         
         # Resource requests and limits
