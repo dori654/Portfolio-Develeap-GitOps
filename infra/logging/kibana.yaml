@@ -13,8 +13,20 @@ spec:
     targetRevision: 7.17.3
     helm:
       values: |
-        # Configure Elasticsearch connection
-        elasticsearchHosts: "http://elasticsearch-master.efk.svc.cluster.local:9200"
+        replicas: 1
+        
+        # Configure Elasticsearch connection with HTTPS
+        elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
+        
+        # Elasticsearch credentials
+        extraEnvs:
+          - name: ELASTICSEARCH_USERNAME
+            value: "elastic"
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-master-credentials
+                key: password
         
         # Resource requests and limits
         resources:
@@ -24,33 +36,39 @@ spec:
           limits:
             cpu: "500m"
             memory: "1Gi"
-            
+        
         # Configure service to access Kibana
         service:
-          type: ClusterIP
+          type: LoadBalancer
           port: 5601
-          
+        
         # Configure ingress for external access
         ingress:
-          enabled: true
-          className: "nginx"
-          hosts:
-            - host: kibana.local
-              paths:
-                - path: /
-                  pathType: Prefix
-                  
+          enabled: false
+          # Uncomment to enable ingress:
+          # className: "nginx"
+          # hosts:
+          #   - host: kibana.local
+          #     paths:
+          #       - path: /
+          #         pathType: Prefix
+        
         # Configure default index pattern and dashboards
         kibanaConfig:
           kibana.yml: |
             server.name: kibana
             server.host: "0.0.0.0"
-            elasticsearch.hosts: ["http://elasticsearch-master.efk.svc.cluster.local:9200"]
+            elasticsearch.hosts: ["https://elasticsearch-master.logging.svc.cluster.local:9200"]
+            elasticsearch.username: "${ELASTICSEARCH_USERNAME}"
+            elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+            elasticsearch.ssl.verificationMode: none
+            xpack.security.enabled: true
             monitoring.ui.container.elasticsearch.enabled: true
-
+  
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
+  
   syncPolicy:
     automated:
       prune: true
