@@ -2,23 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fluent-bit
-  namespa          outputs: |
-            [OUTPUT]
-                Name es
-                Match kube.*
-                Host elasticsearch-master.logging.svc.cluster.local
-                Port 9200
-                Logstash_Format On
-                Logstash_Prefix cat-agency
-                Logstash_DateFormat %Y.%m.%d
-                Include_Tag_Key On
-                Tag_Key tag
-                Generate_ID On
-                Replace_Dots On
-                Retry_Limit 5
-                Suppress_Type_Name On
-                tls Off
-                tls.verify Offzers:
+  namespace: argocd
+  finalizers:
     - resources-finalizer.argocd.argoproj.io
 
 spec:
@@ -30,17 +15,6 @@ spec:
     helm:
       values: |
         logLevel: info
-        env:
-          - name: FLUENT_ES_USER
-            valueFrom:
-              secretKeyRef:
-                name: logging-secret
-                key: username
-          - name: FLUENT_ES_PASS
-            valueFrom:
-              secretKeyRef:
-                name: logging-secret
-                key: password
 
         config:
           service: |
@@ -108,8 +82,6 @@ spec:
                 Match kube.*
                 Host elasticsearch-master.logging.svc.cluster.local
                 Port 9200
-                HTTP_User ${FLUENT_ES_USER}
-                HTTP_Passwd ${FLUENT_ES_PASS}
                 Logstash_Format On
                 Logstash_Prefix cat-agency
                 Logstash_DateFormat %Y.%m.%d
@@ -119,8 +91,7 @@ spec:
                 Replace_Dots On
                 Retry_Limit 5
                 Suppress_Type_Name On
-                tls On
-                tls.verify On
+                tls Off
 
             [OUTPUT]
                 Name stdout
