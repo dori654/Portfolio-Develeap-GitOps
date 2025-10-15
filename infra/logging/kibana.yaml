@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://helm.elastic.co"
     chart: kibana
-    targetRevision: 8.11.0
+    targetRevision: 8.5.1
     helm:
       values: |
         elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
