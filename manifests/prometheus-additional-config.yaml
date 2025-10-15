@@ -9,19 +9,26 @@ metadata:
 type: Opaque
 stringData:
   prometheus-additional.yaml: |
-    - job_name: 'cat-agency-backend-health-json'
+    - job_name: 'cat-agency-backend-metrics'
       scrape_interval: 30s
       scrape_timeout: 10s
-      metrics_path: '/health'
-      scheme: 'http'
-      metric_relabel_configs:
-        - source_labels: [__name__]
-          regex: '.*'
-          target_label: __tmp_up
-          replacement: '1'
+      metrics_path: '/api/metrics/prometheus'  # ✅ Fixed path
+      scheme: 'https'  # ✅ Use HTTPS since you have SSL
       static_configs:
-        - targets: ['cat-agency-backend.cat-agency.svc.cluster.local:5000']
+        - targets: ['cat-agency.ddns.net']
           labels:
             service: 'cat-agency-backend'
             environment: 'production'
             component: 'backend-api'
+    
+    - job_name: 'cat-agency-backend-health'
+      scrape_interval: 15s
+      scrape_timeout: 5s
+      metrics_path: '/api/metrics/health'
+      scheme: 'https'
+      static_configs:
+        - targets: ['cat-agency.ddns.net']
+          labels:
+            service: 'cat-agency-backend'
+            environment: 'production'
+            component: 'health-check'
