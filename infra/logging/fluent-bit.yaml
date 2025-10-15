@@ -43,13 +43,13 @@ spec:
           inputs: |
             [INPUT]
                 Name tail
-                Path /var/log/containers/*_cat-agency_*.log
-                multiline.parser docker, cri
+                Path /var/log/containers/*.log
+                Multiline.parser docker, cri
                 Tag kube.*
-                Mem_Buf_Limit 50MB
+                Mem_Buf_Limit 10MB
                 Skip_Long_Lines On
                 Refresh_Interval 5
-                Read_from_Head False
+                Read_from_Head On
 
           filters: |
             [FILTER]
@@ -142,15 +142,21 @@ spec:
 
         resources:
           limits:
-            memory: 200Mi
-          requests:
             cpu: 100m
-            memory: 100Mi
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+
+        service:
+          extraPorts:
+            - name: metrics
+              port: 2020
+              protocol: TCP
 
         tolerations:
           - key: node-role.kubernetes.io/master
             operator: Exists
-            effect: NoSchedule
 
   destination:
     server: https://kubernetes.default.svc

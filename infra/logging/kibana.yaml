@@ -3,41 +3,51 @@ kind: Application
 metadata:
   name: kibana
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    repoURL: "https://helm.elastic.co"
+    repoURL: https://helm.elastic.co
     chart: kibana
-    targetRevision: 8.5.1
+    targetRevision: 7.17.3
     helm:
       values: |
-        elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
-        protocol: "https"
-
-        extraEnvs:
-          - name: ELASTICSEARCH_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: logging-secret
-                key: username
-          - name: ELASTICSEARCH_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: logging-secret
-                key: password
-
-        kibanaConfig:
-          kibana.yml: |
-            elasticsearch.username: "${ELASTICSEARCH_USERNAME}"
-            elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
-
+        # Configure Elasticsearch connection
+        elasticsearchHosts: "http://elasticsearch-master.efk.svc.cluster.local:9200"
+        
+        # Resource requests and limits
         resources:
           requests:
             cpu: "100m"
             memory: "512Mi"
           limits:
-            cpu: "1000m"
+            cpu: "500m"
             memory: "1Gi"
+            
+        # Configure service to access Kibana
+        service:
+          type: ClusterIP
+          port: 5601
+          
+        # Configure ingress for external access
+        ingress:
+          enabled: true
+          className: "nginx"
+          hosts:
+            - host: kibana.local
+              paths:
+                - path: /
+                  pathType: Prefix
+                  
+        # Configure default index pattern and dashboards
+        kibanaConfig:
+          kibana.yml: |
+            server.name: kibana
+            server.host: "0.0.0.0"
+            elasticsearch.hosts: ["http://elasticsearch-master.efk.svc.cluster.local:9200"]
+            monitoring.ui.container.elasticsearch.enabled: true
+
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
@@ -47,4 +57,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
