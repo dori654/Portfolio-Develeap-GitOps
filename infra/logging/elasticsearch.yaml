@@ -8,32 +8,32 @@ spec:
   source:
     repoURL: "https://helm.elastic.co"
     chart: elasticsearch
-    targetRevision: 8.5.1
+    targetRevision: 7.17.3
     helm:
       values: |
         replicas: 1
         minimumMasterNodes: 1
-        
-        # Enable security with API key authentication
-        esConfig:
-          elasticsearch.yml: |
-            xpack.security.enabled: true
-            xpack.security.authc.api_key.enabled: true
-        
+            
         resources:
           requests:
-            cpu: "25m"
+            cpu: "100m"
             memory: "512Mi"
           limits:
             cpu: "500m"
             memory: "1Gi"
         
         volumeClaimTemplate:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "gp2"
+          accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
+              storage: 10Gi
+        
+        # Set appropriate JVM heap size
+        esJavaOpts: "-Xmx512m -Xms512m"
+        
+        # For development/testing environments
+        antiAffinity: "soft"
+
   destination:
     server: https://kubernetes.default.svc
     namespace: logging
