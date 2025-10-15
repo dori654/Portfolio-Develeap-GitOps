@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prometheus-additional-scrape-configs
+  namespace: monitoring
+  labels:
+    app: prometheus-operator-prometheus
+    chart: kube-prometheus-stack
+type: Opaque
+stringData:
+  prometheus-additional.yaml: |
+    - job_name: 'cat-agency-backend-health-json'
+      scrape_interval: 30s
+      scrape_timeout: 10s
+      metrics_path: '/health'
+      scheme: 'http'
+      metric_relabel_configs:
+        - source_labels: [__name__]
+          regex: '.*'
+          target_label: __tmp_up
+          replacement: '1'
+      static_configs:
+        - targets: ['cat-agency-backend.cat-agency.svc.cluster.local:5000']
+          labels:
+            service: 'cat-agency-backend'
+            environment: 'production'
+            component: 'backend-api'

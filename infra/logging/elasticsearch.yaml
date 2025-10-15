@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://helm.elastic.co"
     chart: elasticsearch
-    targetRevision: 7.17.3
+    targetRevision: 8.11.0
     helm:
       values: |
         replicas: 1

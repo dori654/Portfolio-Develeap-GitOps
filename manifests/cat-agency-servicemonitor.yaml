@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cat-agency-backend-health
+  namespace: monitoring
+  labels:
+    app: cat-agency-backend
+    release: prometheus-stack  # This label is important for Prometheus to discover it
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cat-agency
+      app.kubernetes.io/component: backend
+  namespaceSelector:
+    matchNames:
+    - cat-agency
+  endpoints:
+  - port: http
+    path: /health
+    interval: 30s
+    scrapeTimeout: 10s
