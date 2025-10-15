@@ -46,9 +46,6 @@ spec:
             evaluationInterval: 30s
             scrapeInterval: 30s
             retention: 15d
-            additionalScrapeConfigs:
-              name: prometheus-additional-scrape-configs
-              key: prometheus-additional.yaml
           service:
             type: ClusterIP
           ingress:
