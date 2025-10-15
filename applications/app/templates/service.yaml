@@ -10,7 +10,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
     prometheus.io/scrape: "true"
     prometheus.io/path: "/api/metrics/prometheus"
-    prometheus.io/port: "{{ .Values.service.port }}"
+    prometheus.io/port: "{{ .Values.backend.service.port }}"
 
 spec:
   type: {{ .Values.backend.service.type }}
