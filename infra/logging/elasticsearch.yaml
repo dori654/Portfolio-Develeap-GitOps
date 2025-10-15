@@ -13,6 +13,9 @@ spec:
       values: |
         replicas: 1
         minimumMasterNodes: 1
+        
+        # Single-node cluster should accept yellow status
+        clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
             
         resources:
           requests:
