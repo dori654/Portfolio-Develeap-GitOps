@@ -15,21 +15,8 @@ spec:
       values: |
         replicas: 1
         
-        # Configure Elasticsearch connection with HTTPS
-        elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
-        
-        # Elasticsearch credentials
-        extraEnvs:
-          - name: ELASTICSEARCH_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: elasticsearch-credentials
-                key: username
-          - name: ELASTICSEARCH_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: elasticsearch-credentials
-                key: password
+        # Configure Elasticsearch connection with HTTP (security disabled)
+        elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
         
         # Resource requests and limits
         resources:
@@ -61,11 +48,8 @@ spec:
           kibana.yml: |
             server.name: kibana
             server.host: "0.0.0.0"
-            elasticsearch.hosts: ["https://elasticsearch-master.logging.svc.cluster.local:9200"]
-            elasticsearch.username: "${ELASTICSEARCH_USERNAME}"
-            elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
-            elasticsearch.ssl.verificationMode: none
-            xpack.security.enabled: true
+            elasticsearch.hosts: ["http://elasticsearch-master.logging.svc.cluster.local:9200"]
+            xpack.security.enabled: false
             monitoring.ui.container.elasticsearch.enabled: true
   
   destination:

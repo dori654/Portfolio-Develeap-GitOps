@@ -2,8 +2,23 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fluent-bit
-  namespace: argocd
-  finalizers:
+  namespa          outputs: |
+            [OUTPUT]
+                Name es
+                Match kube.*
+                Host elasticsearch-master.logging.svc.cluster.local
+                Port 9200
+                Logstash_Format On
+                Logstash_Prefix cat-agency
+                Logstash_DateFormat %Y.%m.%d
+                Include_Tag_Key On
+                Tag_Key tag
+                Generate_ID On
+                Replace_Dots On
+                Retry_Limit 5
+                Suppress_Type_Name On
+                tls Off
+                tls.verify Offzers:
     - resources-finalizer.argocd.argoproj.io
 
 spec:
