@@ -15,7 +15,7 @@ metadata:
     # Use a consistent name to prevent recreation
     service.beta.kubernetes.io/aws-load-balancer-name: "cat-agency-ingress-nlb"
     # External-DNS annotations for automatic DNS management
-    external-dns.alpha.kubernetes.io/hostname: "cat-agency.ddns.net,api.cat-agency.ddns.net"
+    external-dns.alpha.kubernetes.io/hostname: "cat-agency.ddns.net"
     external-dns.alpha.kubernetes.io/ttl: "300"
   labels:
     app.kubernetes.io/name: ingress-nginx
