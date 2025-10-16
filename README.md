@@ -7,14 +7,18 @@ This repository contains the GitOps configuration for deploying and managing the
 
 ![Full Architecture](Images/Full_architecture.png)
 
+# Kubernetes Architecture
+![k8s](Images/k8s_arc.png)
+
+
 # Argocd View
 
 ![Argocd](Images/Argocd.png)
 # Grafana Dashboard
-![alt text](Images/grafana.png)
+![grafana](Images/grafana.png)
 
 # Kibana Dashboard
-![alt text](Images/temp_kibana.png)
+![kibana](Images/temp_kibana.png)
 
 
 ## Repository Structure
