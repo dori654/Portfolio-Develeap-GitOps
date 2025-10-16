@@ -13,7 +13,7 @@ backend:
   image:
     repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
     pullPolicy: IfNotPresent
-    tag: "backend-v1.1.9"
+    tag: "backend-v1.2.0"
   
   service:
     type: ClusterIP
@@ -86,7 +86,7 @@ frontend:
   image:
     repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
     pullPolicy: IfNotPresent
-    tag: "frontend-v1.1.9"
+    tag: "frontend-v1.2.0"
   
   service:
     type: ClusterIP
