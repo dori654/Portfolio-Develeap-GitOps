@@ -18,7 +18,7 @@ This repository contains the GitOps configuration for deploying and managing the
 ![grafana](Images/grafana.png)
 
 # Kibana Dashboard
-![kibana](Images/temp_kibana.png)
+![kibana](Images/kibana.png)
 
 
 
