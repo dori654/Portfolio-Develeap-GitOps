@@ -15,9 +15,10 @@ This repository contains the GitOps configuration for deploying and managing the
 
 ![Argocd](Images/Argocd.png)
 # Grafana Dashboard
-![grafana](Images/grafana.png)
 
+![grafana](Images/grafana.png)
 # Kibana Dashboard
+
 ![kibana](Images/kibana.png)
 
 
