@@ -20,6 +20,26 @@ echo "📋 Step 3: Deleting ArgoCD applications..."
 kubectl delete applications --all -n argocd --timeout=120s
 echo "   ✅ All ArgoCD applications deleted"
 
+# 4. Force delete stuck ingress-nginx namespace resources
+echo ""
+echo "📋 Step 4: Cleaning up ingress-nginx namespace..."
+if kubectl get namespace ingress-nginx &>/dev/null; then
+    echo "   🔍 Found ingress-nginx namespace, cleaning up..."
+
+    # Delete any LoadBalancer services in ingress-nginx
+    kubectl delete svc --all -n ingress-nginx --timeout=30s --ignore-not-found=true
+
+    # Force delete all pods
+    kubectl delete pods --all -n ingress-nginx --force --grace-period=0 --ignore-not-found=true
+
+    # Remove finalizers from namespace to force deletion
+    kubectl get namespace ingress-nginx -o json | jq '.spec.finalizers = []' | kubectl replace --raw /api/v1/namespaces/ingress-nginx/finalize -f - 2>/dev/null || true
+
+    echo "   ✅ Ingress-nginx namespace cleaned up"
+else
+    echo "   ✅ No ingress-nginx namespace found"
+fi
+
 # 4. Delete persistent volumes claims
 echo ""
 # echo "📋 Step 4: Deleting PVCs (which delete EBS volumes)..."
