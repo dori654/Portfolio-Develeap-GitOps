@@ -36,12 +36,12 @@ backend:
     - name: MONGODB_URL
       valueFrom:
         secretKeyRef:
-          name: cat-agency-env
+          name: cat-agency-env-external
           key: MONGODB_URL
     - name: THECAT_API_KEY
       valueFrom:
         secretKeyRef:
-          name: cat-agency-env
+          name: cat-agency-env-external
           key: THECAT_API_KEY
     - name: FLASK_ENV
       valueFrom:
@@ -183,16 +183,15 @@ ingress:
       hosts:
         - cat-agency.ddns.net
 
-# Secrets configuration - These match your env-secret.yaml
+# Secrets configuration - non-sensitive values only
+# Sensitive secrets (MONGODB_URL, THECAT_API_KEY) are stored in AWS Secrets Manager
 secrets:
   AWS_ACCOUNT_ID: "601094796564"
   AWS_REGION: "ap-south-1"
   FLASK_ENV: "production"
   KUBE_NAMESPACE: "cat-agency"
   MONGODB_URI: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
-  MONGODB_URL: "mongodb://cat-agency-user:cat-agency-password@mongodb-replica-set-0.mongodb-replica-set-svc.cat-agency.svc.cluster.local:27017/cat_agency?replicaSet=mongodb-replica-set&authSource=admin&authMechanism=SCRAM-SHA-256"
   REACT_APP_API_URL: "/api"
-  THECAT_API_KEY: "live_Nk8ZEYQWDR9tL2IXTihr3CjxV2HCfZSm81Wh7zjwgldJ96nHY3Bt431UojXwCQNH"
 
 # Autoscaling configuration
 autoscaling:

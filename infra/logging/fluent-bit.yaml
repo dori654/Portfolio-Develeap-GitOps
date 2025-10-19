@@ -3,9 +3,6 @@ kind: Application
 metadata:
   name: fluent-bit
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-
 spec:
   project: default
   source:
