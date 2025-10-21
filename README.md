@@ -9,7 +9,7 @@ This repository contains the GitOps configuration for deploying and managing the
 
 # Kubernetes Architecture
 
-![k8s](Images/k8s.png)
+![k8s](Images/k8s2.png)
 
 # Argocd View
 
