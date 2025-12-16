@@ -11,9 +11,9 @@ global:
 backend:
   replicaCount: 2
   image:
-    repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
+    repository: us-central1-docker.pkg.dev/cat-agency/cat-agency-backend
     pullPolicy: IfNotPresent
-    tag: "backend-v1.2.7"
+    tag: "backend-v1.0.0"
   
   service:
     type: ClusterIP
@@ -84,9 +84,9 @@ backend:
 frontend:
   replicaCount: 2
   image:
-    repository: 601094796564.dkr.ecr.ap-south-1.amazonaws.com/protfolio/app
+    repository: us-central1-docker.pkg.dev/cat-agency/cat-agency-frontend
     pullPolicy: IfNotPresent
-    tag: "frontend-v1.2.7"
+    tag: "frontend-v1.0.0"
   
   service:
     type: ClusterIP
