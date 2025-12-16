@@ -13,7 +13,7 @@ backend:
   image:
     repository: us-central1-docker.pkg.dev/cat-agency/cat-agency-backend
     pullPolicy: IfNotPresent
-    tag: "backend-v1.0.0"
+    tag: "backend-v1.3.2"
   
   service:
     type: ClusterIP
@@ -86,7 +86,7 @@ frontend:
   image:
     repository: us-central1-docker.pkg.dev/cat-agency/cat-agency-frontend
     pullPolicy: IfNotPresent
-    tag: "frontend-v1.0.0"
+    tag: "frontend-v1.3.2"
   
   service:
     type: ClusterIP
