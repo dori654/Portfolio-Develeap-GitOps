@@ -1,3 +1,11 @@
+## Related Repositories
+
+This repository is part of the **Cat Agency** project.
+
+- 🐱 Application Code: [Cat-Agency-App](https://github.com/dori654/Cat-Agency-App)
+- 🏗️ Infrastructure: [Cat-Agency-Infrastructure](https://github.com/dori654/Cat-Agency-Infrastructure)
+
+
 # GitOps Repository
 
 This repository contains the GitOps configuration for deploying and managing the application and the infrastructure applications and services on a Kubernetes cluster using Argo CD.
